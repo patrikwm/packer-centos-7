@@ -1,0 +1,82 @@
+{
+  "variables":
+    {
+      "vsphere_server": "",
+      "vsphere_user": "",
+      "vsphere_password": "",
+      "vsphere_datastore": "",
+      "vsphere_datacenter": "",
+      "vsphere_cluster": "",
+      "vm_name": "",
+      "vm_network": "",
+      "vm_folder": ""
+    },
+    "builders": [
+    {
+      "type": "vmware-iso",
+      "format": "ovf",
+      "boot_command": [
+        "<tab> text ks=http://{{ .HTTPIP }}:{{ .HTTPPort }}/ks.cfg<enter><wait>"
+      ],
+      "boot_wait": "10s",
+      "disk_size": 81920,
+      "guest_os_type": "centos7-64",
+      "http_directory": "http",
+      "iso_urls": [
+        "CentOS-7-x86_64-Minimal-1804.iso",
+        "http://mirror.zetup.net/CentOS/7.5.1804/isos/x86_64/CentOS-7-x86_64-Minimal-1804.iso"
+      ],
+      "iso_checksum_type": "sha256",
+      "iso_checksum": "714acc0aefb32b7d51b515e25546835e55a90da9fb00417fbee2d03a62801efd",
+      "ssh_username": "vagrant",
+      "ssh_password": "vagrant",
+      "version": "13",
+      "ssh_port": 22,
+      "ssh_wait_timeout": "10000s",
+      "shutdown_command": "echo 'vagrant'|sudo -S /sbin/halt -h -p",
+      "headless": true,
+      "vmx_data": {
+        "memsize": "512",
+        "cpuid.coresPerSocket": "2"
+      }
+    }
+  ],
+  "provisioners": [
+    {
+      "type": "shell",
+      "only": ["vmware-iso"],
+      "execute_command": "echo 'vagrant'|sudo -S sh '{{.Path}}'",
+      "script": "scripts/vmware-tools.sh"
+    }
+  ],
+  "post-processors": [
+    [
+      {
+        "type": "vsphere",
+        "only": ["vmware-iso"],
+        "cluster": "{{user `vsphere_cluster`}}",
+        "host": "{{user `vsphere_server`}}",
+        "datacenter": "{{user `vsphere_datacenter`}}",
+        "username": "{{user `vsphere_user`}}",
+        "password": "{{user `vsphere_password`}}",
+        "datastore": "{{user `vsphere_datastore`}}",
+        "vm_name": "{{user `vm_name`}}",
+        "vm_folder": "{{user `vm_folder`}}",
+        "vm_network": "{{user `vm_network`}}",
+        "disk_mode": "thin",
+        "overwrite": true,
+        "insecure": true
+      },
+      {
+        "only": ["vmware-iso"],
+        "type": "vsphere-template",
+        "password": "{{user `vsphere_password`}}",
+        "username": "{{user `vsphere_user`}}",
+        "host": "{{user `vsphere_server`}}",
+        "datacenter": "{{user `vsphere_datacenter`}}",
+        "folder": "{{user `vm_folder`}}",
+        "insecure": true
+      }
+    ]
+  ]
+}
