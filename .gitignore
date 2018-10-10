@@ -3,6 +3,8 @@ packer_cache/*
 *.box
 iso/*
 output-virtualbox-iso/*
+output-vmware-iso/*
+packerlog.txt
 .vagrant/*
 variables.json
 outpub-vmware-iso/*
