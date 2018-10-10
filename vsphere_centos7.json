@@ -34,6 +34,7 @@
       "ssh_port": 22,
       "ssh_wait_timeout": "10000s",
       "shutdown_command": "echo 'vagrant'|sudo -S /sbin/halt -h -p",
+      "tools_upload_flavor": "linux",
       "headless": true,
       "vmx_data": {
         "memsize": "512",
@@ -44,9 +45,18 @@
   "provisioners": [
     {
       "type": "shell",
-      "only": ["vmware-iso"],
-      "execute_command": "echo 'vagrant'|sudo -S sh '{{.Path}}'",
-      "script": "scripts/vmware-tools.sh"
+      "execute_command": "echo 'vagrant' | {{.Vars}} sudo -S -E bash '{{.Path}}'",
+      "script": "scripts/ansible.sh"
+    },
+    {
+      "type": "ansible-local",
+      "playbook_file": "ansible/main.yml",
+      "galaxy_file": "requirements.yml"
+    },
+    {
+      "type": "shell",
+      "execute_command": "echo 'vagrant' | {{.Vars}} sudo -S -E bash '{{.Path}}'",
+      "script": "scripts/cleanup.sh"
     }
   ],
   "post-processors": [
