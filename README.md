@@ -63,4 +63,5 @@ MIT license.
 ## Author Information
 
 Updated to use vSphere vCenter 2018 Patrik Wigur Martin
+
 Created in 2014 by [Jeff Geerling](https://www.jeffgeerling.com/), author of [Ansible for DevOps](https://www.ansiblefordevops.com/).
